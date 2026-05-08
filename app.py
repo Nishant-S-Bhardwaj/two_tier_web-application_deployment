@@ -1,6 +1,8 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_mysqldb import MySQL
+import time
+from MySQLdb import OperationalError
 
 app = Flask(__name__)
 
@@ -45,3 +47,22 @@ def submit():
 if __name__ == '__main__':
     init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+def get_db_connection():
+    for i in range(10):
+        try:
+            # Try to connect
+            cur = mysql.connection.cursor()
+            return cur
+        except Exception as e:
+            print(f"Database not ready (Attempt {i+1}/10). Retrying in 5s...")
+            time.sleep(5)
+    raise Exception("Could not connect to the database after 10 attempts.")
+
+@app.route('/')
+def index():
+    cur = get_db_connection()
+    cur.execute("SELECT 'Connection Successful!'")
+    result = cur.fetchone()
+    cur.close()
+    return f"<h1>{result[0]}</h1>"
