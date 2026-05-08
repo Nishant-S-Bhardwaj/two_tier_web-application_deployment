@@ -29,6 +29,10 @@ To prevent data loss during container refreshes or Jenkins builds, the MySQL dat
     db:
       volumes:
         - db_data:/var/lib/mysql
+### 3. Resilience & Self-Healing
+Healthchecks: The database service includes a healthcheck to ensure the MySQL engine is fully initialized before the Flask app attempts to connect.
+
+Retry Logic: The Flask application includes a Python-based retry loop to handle transient network delays during startup, preventing "Race Condition" crashes.
 
 git clone https://github.com/Nishant-S-Bhardwaj/two_tier_web-application_deployment.git
     cd two_tier_web-application_deployment
